@@ -2,6 +2,7 @@ import psycopg2
 from dotenv import load_dotenv
 import os
 
+# Load environment variables from .env file
 load_dotenv()
 
 # Global connection variable
@@ -28,3 +29,9 @@ def get_connection():
     if global_connection is None:
         init_db()
     return global_connection
+
+def close_connection():
+    global global_connection
+    if global_connection is not None:
+        global_connection.close()
+        global_connection = None

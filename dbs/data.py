@@ -1,37 +1,39 @@
-
 from dbs.database import get_connection
 
+conn = get_connection()  # Initialize the connection globally
+
 def create_table():
-    query = '''
-    CREATE TABLE IF NOT EXISTS students (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(100),
-        age INTEGER,
-        department VARCHAR(100)
-    );
-    '''
-    conn = get_connection()
-    with conn.cursor() as cur:
-        cur.execute(query)
-    conn.commit()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS students (
+                    id SERIAL PRIMARY KEY,
+                    name VARCHAR(100),
+                    age INTEGER,
+                    department VARCHAR(100)
+                );
+            """)
+            conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise e
 
 def insert_data():
-    query = '''
-    INSERT INTO students (name, age, department)
-    VALUES 
-    ('Ram', 30, 'Engineering'),
-    ('Shyam', 25, 'Marketing'),
-    ('Bob', 28, 'Sales');
-    '''
-    conn = get_connection()
-    with conn.cursor() as cur:
-        cur.execute(query)
-    conn.commit()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("INSERT INTO students (name, age, department) VALUES (%s, %s, %s)", ('Ram', 20, 'Engineering'))
+            cur.execute("INSERT INTO students (name, age, department) VALUES (%s, %s, %s)", ('Shyam', 22, 'Business'))
+            cur.execute("INSERT INTO students (name, age, department) VALUES (%s, %s, %s)", ('Bob', 21, 'Arts'))
+            conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise e
 
 def fetch_data():
-    query = 'SELECT * FROM students;'
-    conn = get_connection()
-    with conn.cursor() as cur:
-        cur.execute(query)
-        data = cur.fetchall()
-    return data
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SELECT * FROM students")
+            data = cur.fetchall()
+            return data
+    except Exception as e:
+        raise e
