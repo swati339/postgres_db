@@ -1,6 +1,15 @@
 from dbs.database import get_connection
 
-conn = get_connection()  # Initialize the connection globally
+conn = get_connection()  
+
+def drop_table():
+    try:
+        with conn.cursor() as cur:
+            cur.execute("DROP TABLE IF EXISTS students;")
+            conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise e
 
 def create_table():
     try:
@@ -17,18 +26,6 @@ def create_table():
     except Exception as e:
         conn.rollback()
         raise e
-    
-# def insert_data():
-#     try:
-#         with conn.cursor() as cur:
-#             cur.execute("INSERT INTO students (name, age, department) VALUES (%s, %s, %s)", ('Ram', 20, 'Engineering'))
-#             cur.execute("INSERT INTO students (name, age, department) VALUES (%s, %s, %s)", ('Shyam', 22, 'Business'))
-#             cur.execute("INSERT INTO students (name, age, department) VALUES (%s, %s, %s)", ('Bob', 21, 'Arts'))
-#             conn.commit()
-#     except Exception as e:
-#         conn.rollback()
-#         raise e
-
     
 def insert_data(data):
     try:
@@ -49,7 +46,7 @@ def insert_data(data):
 def fetch_data():
     try:
         with conn.cursor() as cur:
-            cur.execute("SELECT * FROM students")
+            cur.execute("SELECT * FROM students ORDER BY age")
             data = cur.fetchall()
             return data
     except Exception as e:
