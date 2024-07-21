@@ -1,12 +1,16 @@
 import pytest
 from dbs.data import create_table, insert_data, fetch_data
-from dbs.database import init_db, close_connection, get_connection
+from dbs.database import close_connection, get_connection
 
 @pytest.fixture(scope='session', autouse=True)
 def setup_db():
-    init_db()
-    yield
-    close_connection()
+    conn = get_connection()
+    try:
+        create_table()
+        yield
+    finally:
+        close_connection(conn)
+
 
 @pytest.fixture(scope='function', autouse=True)
 def clear_table():
@@ -18,6 +22,8 @@ def clear_table():
     except Exception as e:
         conn.rollback()
         raise e
+    finally:
+        close_connection(conn)
 
 def test_create_table():
     create_table()
