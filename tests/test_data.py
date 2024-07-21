@@ -30,22 +30,39 @@ def test_create_table():
     data = fetch_data()
     assert len(data) == 0, f"Table should be empty initially, but has {len(data)} rows"
 
-def test_insert_data():
-    create_table()
-    insert_data()
-    data = fetch_data()
-    assert len(data) == 3, f"Should have inserted 3 rows, but has {len(data)} rows"
-    assert data[0][1] == 'Ram', "First row should have name 'Ram'"
-    assert data[1][1] == 'Shyam', "Second row should have name 'Shyam'"
-    assert data[2][1] == 'Bob', "Third row should have name 'Bob'"
+def test_upsert_data():
+    initial_data = [('Ram', 20, 'Engineering'), ('Shyam', 22, 'Engineering'), ('Bob', 24, 'Engineering')]
+    for item in initial_data:
+        insert_data(item)
+
+    updated_data = [('Ram', 21, 'Science'), ('Shyam', 23, 'Business')]
+    for item in updated_data:
+        insert_data(item)
+    
+    fetched_data = fetch_data()
+    print("Fetched Data:", fetched_data)  
+    
+    assert len(fetched_data) == 3, f"Should have 3 rows, but has {len(fetched_data)} rows"
+    
+    assert fetched_data[0][1] == 'Ram', "First row should have name 'Ram'"
+    assert fetched_data[0][2] == 21, "First row should have updated age 21"
+    assert fetched_data[0][3] == 'Science', "First row should have updated department 'Science'"
+    
+    assert fetched_data[1][1] == 'Shyam', "Second row should have name 'Shyam'"
+    assert fetched_data[1][2] == 23, "Second row should have updated age 23"
+    assert fetched_data[1][3] == 'Business', "Second row should have updated department 'Business'"
+    
+    assert fetched_data[2][1] == 'Bob', "Third row should have name 'Bob'"
+    assert fetched_data[2][2] == 24, "Third row should have age 24"
+    assert fetched_data[2][3] == 'Engineering', "Third row should have department 'Engineering'"
 
 def test_fetch_data():
-    create_table()
-    insert_data()
-    data = fetch_data()
-    assert len(data) == 3, f"Should fetch 3 rows, but has {len(data)} rows"
-    assert data[0][1] == 'Ram', "First row should have name 'Ram'"
-    assert data[1][1] == 'Shyam', "Second row should have name 'Shyam'"
-    assert data[2][1] == 'Bob', "Third row should have name 'Bob'"
-
-
+    initial_data = [('Ram', 20, 'Engineering'), ('Shyam', 22, 'Engineering'), ('Bob', 24, 'Engineering')]
+    for item in initial_data:
+        insert_data(item)
+    
+    fetched_data = fetch_data()
+    assert len(fetched_data) == 3, f"Should fetch 3 rows, but has {len(fetched_data)} rows"
+    assert fetched_data[0][1] == 'Ram', "First row should have name 'Ram'"
+    assert fetched_data[1][1] == 'Shyam', "Second row should have name 'Shyam'"
+    assert fetched_data[2][1] == 'Bob', "Third row should have name 'Bob'"
