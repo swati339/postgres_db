@@ -6,7 +6,7 @@ from dbs.database import close_connection, get_connection
 def setup_db():
     conn = get_connection()
     try:
-        drop_table()  # Drop the existing table to ensure a clean setup
+        drop_table()  
         create_table()
         yield
     finally:
@@ -30,25 +30,18 @@ def test_create_table():
     data = fetch_data()
     assert len(data) == 0, f"Table should be empty initially, but has {len(data)} rows"
 
-def test_upsert_data():
-    # Insert initial data
+def test_multiple_upsert_data():
     initial_data = [('Ram', 20, 'Engineering'), ('Shyam', 22, 'Engineering'), ('Bob', 24, 'Engineering')]
-    for item in initial_data:
-        insert_data(item)
+    insert_data(initial_data)
 
-    # Insert data with conflicts (updating existing records)
     updated_data = [('Ram', 21, 'Science'), ('Shyam', 23, 'Business')]
-    for item in updated_data:
-        insert_data(item)
+    insert_data(updated_data)
     
-    # Fetch and verify data
     fetched_data = fetch_data()
-    print("Fetched Data:", fetched_data)  # Debugging line
+    print("Fetched Data:", fetched_data)  
     
-    # Check if the data length is as expected
     assert len(fetched_data) == 3, f"Should have 3 rows, but has {len(fetched_data)} rows"
     
-    # Check if the data is correctly updated
     assert fetched_data[0][1] == 'Ram', f"First row should have name 'Ram', but has {fetched_data[0][1]}"
     assert fetched_data[0][2] == 21, f"First row should have updated age 21, but has {fetched_data[0][2]}"
     assert fetched_data[0][3] == 'Science', f"First row should have updated department 'Science', but has {fetched_data[0][3]}"
@@ -62,12 +55,9 @@ def test_upsert_data():
     assert fetched_data[2][3] == 'Engineering', f"Third row should have department 'Engineering', but has {fetched_data[2][3]}"
 
 def test_fetch_data():
-    # Insert some data
     initial_data = [('Ram', 20, 'Engineering'), ('Shyam', 22, 'Engineering'), ('Bob', 24, 'Engineering')]
-    for item in initial_data:
-        insert_data(item)
+    insert_data(initial_data)
     
-    # Fetch and verify data
     fetched_data = fetch_data()
     assert len(fetched_data) == 3, f"Should fetch 3 rows, but has {len(fetched_data)} rows"
     assert fetched_data[0][1] == 'Ram', f"First row should have name 'Ram', but has {fetched_data[0][1]}"

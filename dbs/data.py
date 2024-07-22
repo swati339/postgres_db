@@ -1,4 +1,6 @@
 from dbs.database import get_connection
+from psycopg2.extras import execute_values
+
 
 conn = get_connection()  
 
@@ -30,9 +32,9 @@ def create_table():
 def insert_data(data):
     try:
         with conn.cursor() as cur:
-            cur.execute("""
+            execute_values(cur, """
                 INSERT INTO students (name, age, department)
-                VALUES (%s, %s, %s)
+                VALUES %s
                 ON CONFLICT (name) DO UPDATE
                 SET age = EXCLUDED.age,
                     department = EXCLUDED.department;
